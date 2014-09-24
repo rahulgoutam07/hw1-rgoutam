@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.apache.uima.UIMAException;
+import org.apache.uima.UIMARuntimeException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
@@ -18,15 +20,23 @@ import org.apache.uima.util.Progress;
 public class MyCollectionReader extends CollectionReader_ImplBase {
 
   BufferedReader br = null;
+  /**
+   * initialize bufferedreader to read from file
+   */
   public void initialize() {
-    File file = new File((String)getConfigParameterValue("InputPath"));
+    File file = new File( this.getClass().getClassLoader().getResource( (String)getConfigParameterValue("InputPath")).getPath());
     try {
       br = new BufferedReader(new FileReader(file));
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new UIMARuntimeException(e);
     }
   }
+  
+  /**
+   * @param aCas CAS object
+   * get next sentence from file and prepare a cas for it
+   */
   @Override
   public void getNext(CAS aCAS) throws IOException, CollectionException {
     // TODO Auto-generated method stub
@@ -44,7 +54,7 @@ public class MyCollectionReader extends CollectionReader_ImplBase {
       s.setSentence(comp[1]);
       s.addToIndexes();
     } catch(Exception e) {
-      e.printStackTrace();
+      throw new UIMARuntimeException(e);
     }
   }
 
@@ -60,6 +70,9 @@ public class MyCollectionReader extends CollectionReader_ImplBase {
     return null;
   }
 
+  /**
+   * return true if bufferedreader is not empty
+   */
   @Override
   public boolean hasNext() throws IOException, CollectionException {
     // TODO Auto-generated method stub

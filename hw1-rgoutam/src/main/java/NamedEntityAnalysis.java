@@ -1,6 +1,8 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Set;
 
+import org.apache.uima.UIMARuntimeException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -17,17 +19,24 @@ import com.aliasi.util.AbstractExternalizable;
 public class NamedEntityAnalysis extends JCasAnnotator_ImplBase {
   Chunker model;
   
+  /**
+   * read the NER model file
+   */
   @Override
   public void initialize(UimaContext aContext) throws ResourceInitializationException {
     // TODO Auto-generated method stub
     try {
-      File f = new File((String)aContext.getConfigParameterValue("ModelName"));
+      File f = new File(this.getClass().getClassLoader().getResource((String)aContext.getConfigParameterValue("ModelName")).getFile());
       model = (Chunker) AbstractExternalizable.readObject(f);
     } catch(Exception e) {
-      e.printStackTrace();
+      throw new UIMARuntimeException(e);
     }
   }
   
+  /**
+   * @param arg0 CAS Object
+   * process sentences to get named entities
+   */
   @Override
   public void process(JCas arg0) throws AnalysisEngineProcessException {
     // TODO Auto-generated method stub
@@ -36,15 +45,21 @@ public class NamedEntityAnalysis extends JCasAnnotator_ImplBase {
     Set<Chunk> NamedEntitiesSet = model.chunk((String)sent.getSentence()).chunkSet();
     
     for(Chunk c : NamedEntitiesSet) {
-      NEAnnotation ne = new NEAnnotation();
+      NEAnnotation ne = new NEAnnotation(arg0);
       ne.setBegin(countChar((String)sent.getSentence(), c.start()));
-      ne.setEnd(countChar((String)sent.getSentence(), c.end()));
+      ne.setEnd(countChar((String)sent.getSentence(), c.end()) - 1);
       ne.setNamedEntity((String)sent.getSentence().substring(c.start(), c.end()));
       ne.addToIndexes();
     }
     
   }
   
+  /**
+   * count the number of non-space characters in text till index
+   * @param text 
+   * @param index
+   * @return
+   */
   private static int countChar(String text, int index) {
     int ret = 0;
     for(int i = 0; i < index; i++) {
