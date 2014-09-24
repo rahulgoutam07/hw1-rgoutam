@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.cmu.lti.11791.f14.hw1</groupId>
   <artifactId>hw1-rgoutam</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
   <repositories>
     <repository>
       <id>oaqa</id>
@@ -114,6 +114,5 @@
   	<url>scm:git:git@github.com:rahulgoutam07/hw1-rgoutam.git</url>
   	<connection>scm:git:git@github.com:rahulgoutam07/hw1-rgoutam.git</connection>
   	<developerConnection>scm:git:git@github.com:rahulgoutam07/hw1-rgoutam.git</developerConnection>
-  	<tag>hw1-rgoutam-0.0.2</tag>
   </scm>
 </project>
